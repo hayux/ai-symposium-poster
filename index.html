@@ -1,0 +1,1696 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Interactive Poster — “Small” Large Language Models in the Hospital:
+            An Evaluation Study on Real-World Data in a Resource-Constrained
+            Setting
+        </title>
+
+        <!-- Tailwind CSS CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Plotly for interactive figures -->
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+        <!-- Custom Tailwind config for light, clean look -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: "#2563eb", // blue-600
+                            primaryH: "#1d4ed8", // blue-700
+                            accent: "#059669", // emerald-600
+                            lightBg: "#f8fafc", // slate-50
+                            cardBg: "#ffffff",
+                            textMain: "#1e293b", // slate-800
+                            textSoft: "#64748b", // slate-500
+                            border: "#e2e8f0", // slate-200
+                        },
+                    },
+                },
+            };
+        </script>
+
+        <style>
+            html {
+                scroll-behavior: smooth;
+            }
+            .nav-btn.active {
+                background-color: #2563eb;
+                color: white;
+                font-weight: 600;
+            }
+            .content-section {
+                display: none;
+            }
+            .content-section.active {
+                display: block;
+            }
+            /* Mobile: nav scrolls horizontally */
+            @media (max-width: 768px) {
+                .nav-scroll {
+                    display: flex;
+                    overflow-x: auto;
+                    white-space: nowrap;
+                    gap: 0.5rem;
+                    padding-bottom: 0.5rem;
+                }
+                .nav-scroll button {
+                    flex-shrink: 0;
+                }
+            }
+        </style>
+    </head>
+    <body class="bg-lightBg text-textMain font-sans antialiased min-h-screen">
+        <!-- ============================================================ -->
+        <!--  HERO HEADER                                                 -->
+        <!-- ============================================================ -->
+        <header
+            class="bg-white border-b border-border shadow-sm sticky top-0 z-50"
+        >
+            <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
+                <div
+                    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                >
+                    <div>
+                        <h1
+                            class="text-xl sm:text-2xl font-bold text-textMain leading-tight"
+                        >
+                            <!-- PLACEHOLDER: Paper Title -->
+                            “Small” Large Language Models in the Hospital: An
+                            Evaluation Study on Real-World Data in a
+                            Resource-Constrained Setting
+                        </h1>
+                        <p class="text-sm text-textSoft mt-1">
+                            <!-- PLACEHOLDER: Authors & Affiliation -->
+                            H.A.Xu, R.Pythoud, C.W.Thorball, G.Carra,
+                            B.Kulynych, J.Despraz, C.Galland-Decker, E.Maslias,
+                            E.Baudson, T.Brahier, V.Kraege, A.C.de Sousa Teixeira, C.Fidalgo, F.Berthaudin,
+                            A.Madina, S.Zoergiebel, F.Bastardot, A.Stravodimou,
+                            M.Mean, J.Fellay, P.Ryvlin, JL.Raisaro •
+                            2nd Symposium on AI for Clinical and Translational
+                            Medicine
+                        </p>
+                    </div>
+                    <!-- Optional links -->
+                    <!--<div class="flex gap-2 flex-shrink-0">
+                        <a
+                            href="#abstract"
+                            class="text-xs bg-primary text-white px-3 py-2 rounded-lg hover:bg-primaryH transition"
+                        >
+                            📋 Abstract
+                        </a>
+                        <!--<a
+                            href="paper.pdf"
+                            class="text-xs bg-gray-100 text-textMain px-3 py-2 rounded-lg hover:bg-gray-200 transition border border-border"
+                        >
+                            📄 Full Paper (PDF)
+                        </a>-->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================================ -->
+        <!--  MAIN LAYOUT: Navigation (left) + Content (right)           -->
+        <!-- ============================================================ -->
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- ==================================================== -->
+                <!--  LEFT: NAVIGATION SIDEBAR                           -->
+                <!-- ==================================================== -->
+                <aside class="md:w-64 lg:w-72 flex-shrink-0">
+                    <div
+                        class="bg-white rounded-xl shadow-sm border border-border p-4 md:sticky md:top-28"
+                    >
+                        <h3
+                            class="font-semibold text-sm text-textSoft uppercase tracking-wide mb-3"
+                        >
+                            Abstract
+                        </h3>
+                        <!-- Abstract nav buttons -->
+                        <div
+                            class="nav-scroll flex flex-row md:flex-col gap-1 mb-4"
+                            id="nav-abstract"
+                        >
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                                data-target="overview"
+                            >
+                                📌 Overview
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                                data-target="background"
+                            >
+                                🔬 Background
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                                data-target="objective"
+                            >
+                                🎯 Objective
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                                data-target="methods"
+                            >
+                                ⚙️ Methods
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                                data-target="results-summary"
+                            >
+                                📊 Results Summary
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                                data-target="conclusion"
+                            >
+                                💡 Conclusion
+                            </button>
+                        </div>
+
+                        <h3
+                            class="font-semibold text-sm text-textSoft uppercase tracking-wide mb-3 mt-4"
+                        >
+                            Use Cases
+                        </h3>
+                        <!-- Use Case nav buttons -->
+                        <div
+                            class="nav-scroll flex flex-row md:flex-col gap-1"
+                            id="nav-usecases"
+                        >
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition border-l-4 border-transparent"
+                                data-target="uc1"
+                            >
+                                [1] PHI Extraction
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition border-l-4 border-transparent"
+                                data-target="uc2"
+                            >
+                                [2] irAE Extraction
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition border-l-4 border-transparent"
+                                data-target="uc3"
+                            >
+                                [3] Med Translation
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition border-l-4 border-transparent"
+                                data-target="uc4"
+                            >
+                                [4] Discharge Summary
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition border-l-4 border-transparent"
+                                data-target="uc5"
+                            >
+                                [5] Patient Letter
+                            </button>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition border-l-4 border-transparent"
+                                data-target="uc6"
+                            >
+                                [6] Clinical Decision Support
+                            </button>
+                            <h3
+                                class="font-semibold text-sm text-textSoft uppercase tracking-wide mb-3 mt-6"
+                            >
+                                Authors
+                            </h3>
+                            <button
+                                class="nav-btn text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition w-full"
+                                data-target="authors"
+                            >
+                                👥 Author Affiliations
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- ==================================================== -->
+                <!--  RIGHT: CONTENT PANEL                               -->
+                <!-- ==================================================== -->
+                <main class="flex-1 min-w-0">
+                    <!-- Overview -->
+                    <section
+                        class="content-section active bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="overview"
+                    >
+                        <h2 class="text-2xl font-bold mb-3">Paper Overview</h2>
+                        <p class="text-textSoft leading-relaxed mb-4">
+                            <!-- PLACEHOLDER: Short overview paragraph -->
+                            This paper evaluates six clinical NLP tasks using
+                            small-scale open-source large language models. We
+                            benchmark performance across tasks critical to
+                            clinical workflows: information extraction,
+                            translation, summarization, patient-facing text
+                            generation and clinical decision support.
+                        </p>
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm"
+                        >
+                            <div
+                                class="bg-blue-50 border border-blue-200 rounded-lg p-3"
+                            >
+                                <span class="font-semibold text-blue-800"
+                                    >6</span
+                                >
+                                <span class="text-blue-700"
+                                    >Clinical Use Cases</span
+                                >
+                            </div>
+                            <div
+                                class="bg-emerald-50 border border-emerald-200 rounded-lg p-3"
+                            >
+                                <span class="font-semibold text-emerald-800"
+                                    >6</span
+                                >
+                                <span class="text-emerald-700"
+                                    >Models Compared</span
+                                >
+                            </div>
+                            <div
+                                class="bg-violet-50 border border-violet-200 rounded-lg p-3"
+                            >
+                                <span class="font-semibold text-violet-800"
+                                    >5</span
+                                >
+                                <span class="text-violet-700"
+                                    >Objective Evaluation Metrics</span
+                                >
+                            </div>
+                            <div
+                                class="bg-amber-50 border border-amber-200 rounded-lg p-3"
+                            >
+                                <span class="font-semibold text-amber-800"
+                                    >3</span
+                                >
+                                <span class="text-amber-700"
+                                    >Clinician Evaluated Cases</span
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Background -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="background"
+                    >
+                        <h2 class="text-2xl font-bold mb-3">🔬 Background</h2>
+                        <!-- PLACEHOLDER: Full background text -->
+                        <p class="text-textSoft leading-relaxed">
+                            Large language models (LLMs) have shown promise in health care, but their usage and deployment in hospitals is constrained by data protection requirements, limited local computing resources, and a lack of validation on real-world, non-English clinical data. Smaller open-source LLMs that can be deployed locally may offer a practical alternative, but their clinical utility remains insufficiently evaluated.
+                            <br /><br />
+                            <!--[Add more background text here...]-->
+                        </p>
+                    </section>
+
+                    <!-- Objective -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="objective"
+                    >
+                        <h2 class="text-2xl font-bold mb-3">🎯 Objective</h2>
+                        <!-- PLACEHOLDER: Objective text -->
+                        <p class="text-textSoft leading-relaxed">
+                            This study aimed to evaluate the feasibility of small, locally deployable open-source LLMs for clinically relevant tasks in a resource-constrained hospital setting and to propose a reproducible framework for institution-specific evaluation before deployment.
+                            <br /><br />
+                            <!--[Add more detail about specific objectives...]-->
+                        </p>
+                    </section>
+
+                    <!-- Methods -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="methods"
+                    >
+                        <h2 class="text-2xl font-bold mb-3">⚙️ Methods</h2>
+                        <!-- PLACEHOLDER: Methods summary -->
+                        <p class="text-textSoft leading-relaxed mb-4">
+                            We evaluated six open-source LLMs ranging from 8B to 24B parameters (from the Mistral, Phi4, Falcon3, Llama3.1, and Meditron3 families) in a zero-shot setting across  seven tasks covering four clinical use cases: information extraction, medical text translation, text generation, and clinical decision support. The evaluation used de-identified French clinical data from a Swiss tertiary hospital, including discharge letters, clinical notes and structured electric health records. Performance was assessed using task-appropriate metrics, including precision, recall, macro-F1 score, embedding-based semantic similarity, penalized ROUGE, readability indices, and structured clinician review.
+                        </p>
+                        <!-- PLACEHOLDER: Methods overview table -->
+                        <div class="overflow-x-auto">
+                            <table
+                                class="min-w-full text-sm border border-border rounded-lg overflow-hidden"
+                            >
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            class="px-4 py-2 text-left font-semibold"
+                                        >
+                                            Model
+                                        </th>
+                                        <th
+                                            class="px-4 py-2 text-left font-semibold"
+                                        >
+                                            Size
+                                        </th>
+                                        <th
+                                            class="px-4 py-2 text-left font-semibold"
+                                        >
+                                            Prompting
+                                        </th>
+                                        <th
+                                            class="px-4 py-2 text-left font-semibold"
+                                        >
+                                            Notes
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-border">
+                                    <tr>
+                                        <td class="px-4 py-2">Mistral-Small</td>
+                                        <td class="px-4 py-2">24B</td>
+                                        <td class="px-4 py-2">Zero-shot</td>
+                                        <td class="px-4 py-2">Open Source</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2">Phi4</td>
+                                        <td class="px-4 py-2">14B</td>
+                                        <td class="px-4 py-2">Zero-shot</td>
+                                        <td class="px-4 py-2">Open Source</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2">Falcon3</td>
+                                        <td class="px-4 py-2">10B</td>
+                                        <td class="px-4 py-2">Zero-shot</td>
+                                        <td class="px-4 py-2">Open-source</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2">Llama-3.1</td>
+                                        <td class="px-4 py-2">8B</td>
+                                        <td class="px-4 py-2">Zero-shot</td>
+                                        <td class="px-4 py-2">Open-source</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2">
+                                            Meditron3-Phi4
+                                        </td>
+                                        <td class="px-4 py-2">14B</td>
+                                        <td class="px-4 py-2">Zero-shot</td>
+                                        <td class="px-4 py-2">Open-source</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2">Meditron3</td>
+                                        <td class="px-4 py-2">8B</td>
+                                        <td class="px-4 py-2">Zero-shot</td>
+                                        <td class="px-4 py-2">Open-source</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Results Summary -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="results-summary"
+                    >
+                        <h2 class="text-2xl font-bold mb-3">
+                            📊 Results Summary
+                        </h2>
+                        <p class="text-textSoft leading-relaxed mb-4">
+                            Model performance was highly task dependent. In the simplest retrieval task (needle-in-the-haystack), several models performed strongly, with Llama3.1 achieving an F1 score of 99.81% and Mistral-small 99.71%. In contrast, performance was poor for more clinically complex tasks. In PHI detection, the best-performing LLMs achieved only modest overall macro-F1 scores (0.33–0.34), substantially below a fine-tuned RoBERTa baseline (0.94). In immune-related adverse event extraction, the highest overall macro-F1 score was 0.35 (Phi4). For medical text translation, Phi4 ranked highest in embedding-based evaluation, whereas Meditron3-Phi4 performed worst and showed frequent truncation-related failures; clinician review also identified hallucinations in 55% of its outputs. Summarization quality was low across all models, with the best penalized ROUGE score reaching only 0.169 (Llama3.1). In both patient-friendly discharge notes generation and clinical decision support, clinician ratings generally ranged from dissatisfied to neutral, and no model achieved consistently satisfactory performance.
+                        </p>
+                        <!-- PLACEHOLDER: Interactive summary figure -->
+                        <!--<div
+                            class="bg-gray-50 border border-border rounded-lg p-4 mb-4"
+                        >
+                            <p class="text-xs text-textSoft mb-2">
+                                ▲ Interactive chart: Click legend items to
+                                toggle models. Hover for scores.
+                            </p>
+                            <div
+                                id="chartSummary"
+                                style="width: 100%; height: 400px"
+                            ></div>
+                        </div>-->
+                    </section>
+
+                    <!-- Conclusion -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="conclusion"
+                    >
+                        <h2 class="text-2xl font-bold mb-3">💡 Conclusion</h2>
+                        <!-- PLACEHOLDER: Conclusion text -->
+                        <p class="text-textSoft leading-relaxed">
+                            Small open-source LLMs appear feasible for simple retrieval-oriented tasks in local hospital deployments but are currently inadequate for more complex applications requiring robust reasoning, accurate summarization, reliable de-identification, or clinical decision support. These findings highlight the importance of locally grounded, use-case-specific evaluation before clinical adoption and support the need for institution-level benchmarking frameworks for safe deployment.
+                            <br /><br />
+                            <!--[Add conclusion details...]-->
+                        </p>
+                    </section>
+
+                    <!-- ================================================ -->
+                    <!--  USE CASE SECTIONS                               -->
+                    <!-- ================================================ -->
+
+                    <!-- Use Case 1: PHI Extraction -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="uc1"
+                    >
+                        <h2 class="text-xl font-bold mb-1">
+                            [1] Personal Health Information Extraction
+                        </h2>
+                        <p class="text-sm text-accent font-medium mb-4">
+                            Named Entity Recognition • Privacy •
+                            De-identification
+                        </p>
+
+                        <!-- Task Description -->
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📝 Task Description
+                            </h3>
+                            <!-- PLACEHOLDER: UC1 description -->
+                            <p class="text-textSoft leading-relaxed">
+                                Building on the assessment of information
+                                retrieval, we targeted eight distinct PHI
+                                entities: 'Name', 'Age', 'Address', 'Telephone',
+                                'Date', 'Time', and 'ID' selected from a subset
+                                of the HIPAA guidance. This evaluation aimed to
+                                assess the LLMs' effectiveness in identifying
+                                sensitive personal data embedded within the
+                                clinical narratives, a foundational capability
+                                for developing automated de-identification
+                                pipelines to limit privacy risks when sharing
+                                medical documentation across institutions or
+                                departments. We used an annotated NER dataset of
+                                3687 records including discharge letters,
+                                consultation letters, lab reports, and other
+                                clinical documents to test the performance of
+                                the LLMs.
+                            </p>
+                        </div>
+
+                        <!-- Evaluation Criteria -->
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📏 Evaluation Criteria
+                            </h3>
+                            <!-- PLACEHOLDER: UC1 evaluation criteria -->
+                            <ul
+                                class="list-disc list-inside text-textSoft space-y-1"
+                            >
+                                <li>Entity-level F1</li>
+                            </ul>
+                        </div>
+
+                        <!-- Results: Toggle buttons + Interactive chart -->
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">
+                                📊 Results
+                            </h3>
+                            <!-- Table view (shown by default) -->
+                            <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm border border-border rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Model
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                NAME
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                DATE
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                TIME
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                ID
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                AGE
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                TEL
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                ADDRESS
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                OVERALL-F1 (95% CI)
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border">
+                                        <!-- PLACEHOLDER: UC1 results table rows -->
+                                        <tr>
+                                            <td class="px-4 py-2">
+                                                Mistral-small
+                                            </td>
+                                            <td class="px-4 py-2">0.84</td>
+                                            <td class="px-4 py-2">0.11</td>
+                                            <td class="px-4 py-2">0.83</td>
+                                            <td class="px-4 py-2">0.26</td>
+                                            <td class="px-4 py-2">0.53</td>
+                                            <td class="px-4 py-2">0.06</td>
+                                            <td class="px-4 py-2">0.08</td>
+                                            <td class="px-4 py-2">
+                                                0.33 (0.32-0.35)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Phi4</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.77</td>
+                                            <td class="px-4 py-2">0.88</td>
+                                            <td class="px-4 py-2">0.51</td>
+                                            <td class="px-4 py-2">0.53</td>
+                                            <td class="px-4 py-2">0.06</td>
+                                            <td class="px-4 py-2">0.01</td>
+                                            <td class="px-4 py-2">
+                                                0.34 (0.32-0.36)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">
+                                                Meditron4-Phi4
+                                            </td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.89</td>
+                                            <td class="px-4 py-2">0.90</td>
+                                            <td class="px-4 py-2">0.46</td>
+                                            <td class="px-4 py-2">0.43</td>
+                                            <td class="px-4 py-2">0.06</td>
+                                            <td class="px-4 py-2">0.01</td>
+                                            <td class="px-4 py-2">
+                                                0.34 (0.32-0.36)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Falcon3</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.90</td>
+                                            <td class="px-4 py-2">0.87</td>
+                                            <td class="px-4 py-2">0.31</td>
+                                            <td class="px-4 py-2">0.53</td>
+                                            <td class="px-4 py-2">0.06</td>
+                                            <td class="px-4 py-2">0.04</td>
+                                            <td class="px-4 py-2">
+                                                0.34 (0.31-0.35)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Llama3.1</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.49</td>
+                                            <td class="px-4 py-2">0.61</td>
+                                            <td class="px-4 py-2">0.16</td>
+                                            <td class="px-4 py-2">0.26</td>
+                                            <td class="px-4 py-2">0.01</td>
+                                            <td class="px-4 py-2">0.04</td>
+                                            <td class="px-4 py-2">
+                                                0.20 (0.17-0.22)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Meditron3</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">
+                                                0.00 (0.00-0.00)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">
+                                                Fine-tuned RoBERTA
+                                            </td>
+                                            <td class="px-4 py-2">0.95</td>
+                                            <td class="px-4 py-2">0.99</td>
+                                            <td class="px-4 py-2">1.00</td>
+                                            <td class="px-4 py-2">0.81</td>
+                                            <td class="px-4 py-2">0.74</td>
+                                            <td class="px-4 py-2">1.00</td>
+                                            <td class="px-4 py-2">0.79</td>
+                                            <td class="px-4 py-2">
+                                                0.94 (0.91-0.96)
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Use Case 2: irAE Extraction -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="uc2"
+                    >
+                        <h2 class="text-xl font-bold mb-1">
+                            [2] Immuno-Related Adverse Event Extraction
+                        </h2>
+                        <p class="text-sm text-accent font-medium mb-4">
+                            Adverse Events • Immunotherapy • Pharmacovigilance
+                        </p>
+
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📝 Task Description
+                            </h3>
+                            <!-- PLACEHOLDER: UC2 description -->
+                            <p class="text-textSoft leading-relaxed">
+                                To assess the LLMs' performance in a realistic clinical context, the third task focused on the extraction of immune-related adverse events (irAEs) from discharge summaries originating from our hospital's oncology department. The targeted irAEs comprised: colitis, thyroiditis, pneumonitis, skin-related effects, hepatitis, hypophysitis, rheumatological manifestations, cardiac toxicities, neurological complications, pancreatitis, nephrological issues, and diabetes. This assessment aimed to test the LLMs' ability to accurately identify and retrieve specific, clinically significant information from complex medical narratives, mirroring a common requirement in routine oncological practice. We used an annotated irAE dataset of 400 discharge letters to test the performance of the LLMs.
+                            </p>
+                        </div>
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📏 Evaluation Criteria
+                            </h3>
+                            <!-- PLACEHOLDER: UC2 criteria -->
+                            <ul
+                                class="list-disc list-inside text-textSoft space-y-1"
+                            >
+                                <li>Event detection F1</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">
+                                📊 Results
+                            </h3>
+                            <div class="flex gap-2 mb-3">
+                                <button
+                                    class="toggle-btn bg-gray-100 text-textMain px-3 py-1.5 rounded-lg text-sm font-medium border border-border"
+                                    data-view="table"
+                                    data-section="uc2"
+                                >
+                                    📋 Table View
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-sm border border-border rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Model
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Cardiac
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Colitis
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Diabetes
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Hepatitis
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Hypophysitis
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Nephrological
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Neurological
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Pancreatitis
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Pneumonities
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Rheumatological
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Skin
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Thyroiditis
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Overall F1 (95% CI)
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border">
+                                        <!-- PLACEHOLDER: UC2 table -->
+                                        <tr>
+                                            <td class="px-4 py-2">Mistral-small</td>
+                                            <td class="px-4 py-2">0.36</td>
+                                            <td class="px-4 py-2">0.46</td>
+                                            <td class="px-4 py-2">0.25</td>
+                                            <td class="px-4 py-2">0.38</td>
+                                            <td class="px-4 py-2">0.31</td>
+                                            <td class="px-4 py-2">0.08</td>
+                                            <td class="px-4 py-2">0.08</td>
+                                            <td class="px-4 py-2">0.55</td>
+                                            <td class="px-4 py-2">0.46</td>
+                                            <td class="px-4 py-2">0.07</td>
+                                            <td class="px-4 py-2">0.21</td>
+                                            <td class="px-4 py-2">0.30</td>
+                                            <td class="px-4 py-2">0.29 (0.20 - 0.35)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Phi4</td>
+                                            <td class="px-4 py-2">0.33</td>
+                                            <td class="px-4 py-2">0.54</td>
+                                            <td class="px-4 py-2">0.55</td>
+                                            <td class="px-4 py-2">0.36</td>
+                                            <td class="px-4 py-2">0.32</td>
+                                            <td class="px-4 py-2">0.22</td>
+                                            <td class="px-4 py-2">0.11</td>
+                                            <td class="px-4 py-2">0.67</td>
+                                            <td class="px-4 py-2">0.53</td>
+                                            <td class="px-4 py-2">0.09</td>
+                                            <td class="px-4 py-2">0.20</td>
+                                            <td class="px-4 py-2">0.34</td>
+                                            <td class="px-4 py-2">0.35 (0.25 - 0.42)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Meditron3-Phi4</td>
+                                            <td class="px-4 py-2">0.40</td>
+                                            <td class="px-4 py-2">0.53</td>
+                                            <td class="px-4 py-2">0.17</td>
+                                            <td class="px-4 py-2">0.33</td>
+                                            <td class="px-4 py-2">0.31</td>
+                                            <td class="px-4 py-2">0.35</td>
+                                            <td class="px-4 py-2">0.11</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.43</td>
+                                            <td class="px-4 py-2">0.08</td>
+                                            <td class="px-4 py-2">0.26</td>
+                                            <td class="px-4 py-2">0.29</td>
+                                            <td class="px-4 py-2">0.26 (0.19 - 0.32)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Falcon3</td>
+                                            <td class="px-4 py-2">0.31</td>
+                                            <td class="px-4 py-2">0.44</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.29</td>
+                                            <td class="px-4 py-2">0.12</td>
+                                            <td class="px-4 py-2">0.24</td>
+                                            <td class="px-4 py-2">0.03</td>
+                                            <td class="px-4 py-2">0.57</td>
+                                            <td class="px-4 py-2">0.29</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.18</td>
+                                            <td class="px-4 py-2">0.31</td>
+                                            <td class="px-4 py-2">0.23 (0.15 - 0.28)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Llama3.1</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.54</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.18</td>
+                                            <td class="px-4 py-2">0.12</td>
+                                            <td class="px-4 py-2">0.21</td>
+                                            <td class="px-4 py-2">0.06</td>
+                                            <td class="px-4 py-2">0.67</td>
+                                            <td class="px-4 py-2">0.22</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.29</td>
+                                            <td class="px-4 py-2">0.24</td>
+                                            <td class="px-4 py-2">0.21 (0.12 - 0.26)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Meditron3</td>
+                                            <td class="px-4 py-2">0.40</td>
+                                            <td class="px-4 py-2">0.45</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.09</td>
+                                            <td class="px-4 py-2">0.17</td>
+                                            <td class="px-4 py-2">0.29</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.40</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.00</td>
+                                            <td class="px-4 py-2">0.18</td>
+                                            <td class="px-4 py-2">0.14</td>
+                                            <td class="px-4 py-2">0.17 (0.08 - 0.25)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Use Case 3: Medical Text Translation -->
+                    <section class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                             id="uc3">
+                        <h2 class="text-xl font-bold mb-1">[3] Medical Text Translation</h2>
+                        <p class="text-sm text-accent font-medium mb-4">Jargon-to-Plain Language • Health Literacy</p>
+
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">📝 Task Description</h3>
+                            <p class="text-textSoft leading-relaxed">
+                                As demographics shift toward greater linguistic diversity, the translation of discharge summaries into patients' native languages has become a clinical and administrative imperative. This practice is necessary not only to bridge communication gaps and maintain continuity of care but also to ensure institutional compliance with legal mandates and accurate billing procedures. However, the automated translation of these documents presents a significant challenge. This difficulty is primarily attributed to the requirement for precise and contextually accurate translation of specialized medical terminology.
+                                In this use case, we focused on the models' ability to accurately translate clinical discharge letters from French to English using a randomly selected dataset of 20 discharge letters collected from different clinical services.
+                            </p>
+                        </div>
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">📏 Evaluation Criteria</h3>
+                            <ul class="list-disc list-inside text-textSoft space-y-1">
+                                <li>Clinician-rated adequacy (Likert 1-5)</li>
+                                <li>Emebedding Similarity</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">📊 Results</h3>
+                            <!-- Toggle buttons -->
+                            <div class="flex gap-2 mb-3">
+                                <button class="toggle-btn active bg-primary text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+                                        data-view="chart" data-section="uc3">
+                                    📈 Clinicians' Evaluations
+                                </button>
+                                <button class="toggle-btn bg-gray-100 text-textMain px-3 py-1.5 rounded-lg text-sm font-medium border border-border"
+                                        data-view="table" data-section="uc3">
+                                    📋 Embedding Similarity Rank
+                                </button>
+                            </div>
+                            <!-- Chart view — now using a static PNG image -->
+                            <div id="uc3-chart" class="view-panel bg-gray-50 border border-border rounded-lg p-4">
+                                <img src="figures/MedTransResult.png"
+                                     alt="Medical Translation Results — Model Comparison"
+                                     class="w-full h-auto max-w-full"
+                                     style="max-height: 500px; object-fit: contain;">
+                                <p class="text-xs text-textSoft mt-2 text-center italic">
+                                    Figure: Comparison of model performance on medical text translation task evaluated by clinicians.
+                                </p>
+                                <img src="figures/MedTransAgreement.png"
+                                     alt="Medical Translation Results — Model Comparison"
+                                     class="w-full h-auto max-w-full"
+                                     style="max-height: 500px; object-fit: contain;">
+                                <p class="text-xs text-textSoft mt-2 text-center italic">
+                                    Figure: The distribution-based agreement for each model-criterion combination. The agreement varied in each combination, while for the readability on the Falcon3 model (rated between 'satisfied' and 'very satisfied'), the 'accuracy of translation' on the Meditron3-Phi4 model (rated 'dissatisfied') and hallucination on the Mistral-small (rated 'no hallucination') model reached highest score (score 1, perfect consensus). The clinician's agreement on the readability of the Phi4 model is the lowest.
+                                </p>
+                            </div>
+                            <!-- Table view (hidden by default) -->
+                            <div id="uc3-table" class="view-panel hidden overflow-x-auto">
+                                <table class="min-w-full text-sm border border-border rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left font-semibold">Model</th>
+                                            <th class="px-4 py-2 text-left font-semibold">Embedding Rank (gte-multilingual-base)</th>
+                                            <th class="px-4 py-2 text-left font-semibold">Embedding Rank (bge-m3)</th>
+                                            <th class="px-4 py-2 text-left font-semibold">Embedding Rank (nomic-text-v1.5)</th>
+                                            <th class="px-4 py-2 text-left font-semibold">Overall Rank </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border">
+                                        <tr><td class="px-4 py-2">Phi4</td><td class="px-4 py-2">1</td><td class="px-4 py-2">1</td><td class="px-4 py-2">1</td><td class="px-4 py-2">1</td></tr>
+                                        <tr><td class="px-4 py-2">Falcon3</td><td class="px-4 py-2">2</td><td class="px-4 py-2">2</td><td class="px-4 py-2">3</td><td class="px-4 py-2">2</td></tr>
+                                        <tr><td class="px-4 py-2">Mistral-small</td><td class="px-4 py-2">3</td><td class="px-4 py-2">3</td><td class="px-4 py-2">4</td><td class="px-4 py-2">3</td></tr>
+                                        <tr><td class="px-4 py-2">Meditron3</td><td class="px-4 py-2">5</td><td class="px-4 py-2">4</td><td class="px-4 py-2">2</td><td class="px-4 py-2">4</td></tr>
+                                        <tr><td class="px-4 py-2">Llama3.1</td><td class="px-4 py-2">4</td><td class="px-4 py-2">5</td><td class="px-4 py-2">5</td><td class="px-4 py-2">5</td></tr>
+                                        <tr><td class="px-4 py-2">Meditron3-Phi4</td><td class="px-4 py-2">6</td><td class="px-4 py-2">6</td><td class="px-4 py-2">6</td><td class="px-4 py-2">6</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Use Case 4: Discharge Summary -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="uc4"
+                    >
+                        <h2 class="text-xl font-bold mb-1">
+                            [4] Discharge Letter Summary
+                        </h2>
+                        <p class="text-sm text-accent font-medium mb-4">
+                            Summarization • Clinical Handover
+                        </p>
+
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📝 Task Description
+                            </h3>
+                            <!-- PLACEHOLDER: UC4 description -->
+                            <p class="text-textSoft leading-relaxed">
+                                To test how well the LLMs could summarize key events, diagnoses, and treatments from patient health records, reflecting the real-world challenge clinicians face in managing vast amounts of patient information and medical research. For this evaluation, we randomly selected 40 discharge letters from diverse clinical services and prompted the LLMs to generate a summary of approximately 300 words.
+                            </p>
+                        </div>
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📏 Evaluation Criteria
+                            </h3>
+                            <ul
+                                class="list-disc list-inside text-textSoft space-y-1"
+                            >
+                                <li>ROUGE-L for content coverage</li>
+                                <!--<li>Clinician-rated adequacy (Likert 1-5)</li>-->
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">
+                                📊 Results
+                            </h3>
+                            <div class="flex gap-2 mb-3">
+                                <button
+                                    class="toggle-btn bg-gray-100 text-textMain px-3 py-1.5 rounded-lg text-sm font-medium border border-border"
+                                    data-view="table"
+                                    data-section="uc4"
+                                >
+                                    📋 Table View
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-sm border border-border rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Model
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                ROUGE
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Text length (in words)
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Length Penalty
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-left font-semibold"
+                                            >
+                                                Pen. ROUGE (95% CI)
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border">
+                                        <!-- PLACEHOLDER: UC4 table -->
+                                        <tr>
+                                            <td class="px-4 py-2">Mistral-small</td>
+                                            <td class="px-4 py-2">0.184 (0.14–0.22)</td>
+                                            <td class="px-4 py-2">391 (348.98–432.06)</td>
+                                            <td class="px-4 py-2">0.833 (0.71–0.95)</td>
+                                            <td class="px-4 py-2">0.156 (0.11–0.19)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Phi4</td>
+                                            <td class="px-4 py-2">0.151 (0.11–0.19)</td>
+                                            <td class="px-4 py-2">368 (345.52–389.53)</td>
+                                            <td class="px-4 py-2">0.927 (0.88–0.96)</td>
+                                            <td class="px-4 py-2">0.141 (0.09–0.18)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Meditron3-Phi4</td>
+                                            <td class="px-4 py-2">0.190 (0.12–0.25)</td>
+                                            <td class="px-4 py-2">445 (353.49–536.18)</td>
+                                            <td class="px-4 py-2">0.727 (0.54–0.91)</td>
+                                            <td class="px-4 py-2">0.114 (0.06–0.16)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Falcon3</td>
+                                            <td class="px-4 py-2">0.107 (0.08–0.13)</td>
+                                            <td class="px-4 py-2">248 (220.657–276.08)</td>
+                                            <td class="px-4 py-2">0.998 (0.99–1.00)</td>
+                                            <td class="px-4 py-2">0.107 (0.08–0.13)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Llama3.1</td>
+                                            <td class="px-4 py-2">0.180 (0.14–0.22)</td>
+                                            <td class="px-4 py-2">316 (275.98–356.53)</td>
+                                            <td class="px-4 py-2">0.941 (0.89–0.99)</td>
+                                            <td class="px-4 py-2">0.169 (0.13–0.21)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Meditron3</td>
+                                            <td class="px-4 py-2">0.287 (0.17– 0.40)</td>
+                                            <td class="px-4 py-2">412 (279.78–545.16)</td>
+                                            <td class="px-4 py-2">0.730 (0.55–0.90)</td>
+                                            <td class="px-4 py-2">0.144 (0.09–0.19)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+
+                    <!-- Use Case 5: Patient-Friendly Letter -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="uc5"
+                    >
+                        <h2 class="text-xl font-bold mb-1">
+                            [5] Patient-Friendly Discharge Letter Generation
+                        </h2>
+                        <p class="text-sm text-accent font-medium mb-4">
+                            Patient Communication • Empathy • Readability
+                        </p>
+
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📝 Task Description
+                            </h3>
+                            <p class="text-textSoft leading-relaxed">
+                                The main goal was to translate key clinical information—including diagnoses, treatments, and follow-up instructions—into language understandable to patients with diverse educational levels. There is evidence that this functionality can enhance patient-clinician communication, patient engagement, and continuity of care. For the experiment, we randomly selected 14 de-identified discharge letters from the internal medicine department. Although the prompt was designed in English for use with multiple languages, the evaluation was conducted in French, which were subsequently evaluated for clinical accuracy and clarity by two native French-speaking clinicians.
+                            </p>
+                        </div>
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📏 Evaluation Criteria
+                            </h3>
+                            <ul class="list-disc list-inside text-textSoft space-y-1">
+                                <li>Kandel-Moles index</li>
+                                <li>Clinician-rated adequacy (Likert 1-5)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">📊 Results</h3>
+                            <!-- Toggle buttons -->
+                            <div class="flex gap-2 mb-3">
+                                <button class="toggle-btn active bg-primary text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+                                        data-view="kandel" data-section="uc5">
+                                    📈 Kandel-Moles Index
+                                </button>
+                                <button class="toggle-btn bg-gray-100 text-textMain px-3 py-1.5 rounded-lg text-sm font-medium border border-border"
+                                        data-view="clinician" data-section="uc5">
+                                    📋 Clinicians' Evaluation
+                                </button>
+                            </div>
+                            <!-- Kandel-Moles Index chart (visible by default) -->
+                            <div id="uc5-kandel" class="view-panel bg-gray-50 border border-border rounded-lg p-4">
+                                <img src="figures/kandel_moles.png"
+                                     alt="Kandel-Moles Index Results"
+                                     class="w-full h-auto max-w-full"
+                                     style="max-height: 500px; object-fit: contain;">
+                                <p class="text-xs text-textSoft mt-2 text-center italic">
+                                    Figure: Kandel-Moles index comparison across models.
+                                </p>
+                            </div>
+                            <!-- Clinicians' Evaluation chart (hidden by default) -->
+                            <div id="uc5-clinician" class="view-panel hidden bg-gray-50 border border-border rounded-lg p-4">
+                                <img src="figures/clinician_eval_patient_letter.png"
+                                     alt="Clinicians' Evaluation Results"
+                                     class="w-full h-auto max-w-full"
+                                     style="max-height: 500px; object-fit: contain;">
+                                <p class="text-xs text-textSoft mt-2 text-center italic">
+                                    Figure: Clinicians' evaluation scores across models.
+                                </p>
+                                <img src="figures/agreement_patient_letter.png"
+                                     alt="Clinicians' Evaluation Results"
+                                     class="w-full h-auto max-w-full"
+                                     style="max-height: 500px; object-fit: contain;">
+                                <p class="text-xs text-textSoft mt-2 text-center italic">
+                                    Figure: Clinicians' agreements scores across models.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Use Case 6: Clinical Decision Support -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="uc6"
+                    >
+                        <h2 class="text-xl font-bold mb-1">
+                            [6] Clinical Decision Support
+                        </h2>
+                        <p class="text-sm text-accent font-medium mb-4">
+                            Treatment Recommendations • Evidence Retrieval • Clinical Reasoning
+                        </p>
+
+
+
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📝 Task Description
+                            </h3>
+                            <p class="text-textSoft leading-relaxed">
+                                This use case assessed the LLMs' capabilities in clinical decision support, specifically their ability to generate differential diagnoses and propose treatment plans. We consider this task to be one of the most challenging assessments of LLM performance in the medical domain.
+                                For this task, we intentionally excluded discharge letters and instead provided the LLMs with curated prompts containing comprehensive patient information, including anamnesis, consultation notes, laboratory results, vital signs, and results of clinical examinations. This design aimed to simulate a real-world clinical decision-making scenario in which the diagnosis has not yet been formally established or documented. The objective was to evaluate the models’ ability to integrate heterogeneous clinical data to generate plausible differential diagnoses and suggest appropriate management strategies. We randomly selected 10 de-identified medical cases from the Neurology service for this task.
+                            </p>
+                        </div>
+
+                        <div class="mb-5">
+                            <h3 class="font-semibold text-lg mb-2">
+                                📏 Evaluation Criteria
+                            </h3>
+                            <ul class="list-disc list-inside text-textSoft space-y-1">
+                                <li>Clinician-rated adequacy (Likert 1-5)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">📊 Results</h3>
+                            <div class="bg-gray-50 border border-border rounded-lg p-4">
+                                <img src="figures/clinician_eval_clinical_support.png"
+                                        alt="Clinical Decision Support Results"
+                                        class="w-full h-auto max-w-full"
+                                        style="max-height: 500px; object-fit: contain;">
+                                <p class="text-xs text-textSoft mt-2 text-center italic">
+                                    Figure: Model performance comparison on the clinical decision support task.
+                                    <!-- PLACEHOLDER: Add more specific caption detail -->
+                                </p>
+                                <img src="figures/agreement_clinical_support.png"
+                                        alt="Clinical Decision Support Results"
+                                        class="w-full h-auto max-w-full"
+                                        style="max-height: 500px; object-fit: contain;">
+                                <p class="text-xs text-textSoft mt-2 text-center italic">
+                                    Figure: Clinicians' agreements scores across models.
+                                    <!-- PLACEHOLDER: Add more specific caption detail -->
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Authors Section -->
+                    <section
+                        class="content-section bg-white rounded-xl shadow-sm border border-border p-6"
+                        id="authors"
+                    >
+                        <h2 class="text-2xl font-bold mb-4">👥 Author Affiliations</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm border border-border rounded-lg">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left font-semibold w-1/3">
+                                            Author
+                                        </th>
+                                        <th class="px-4 py-2 text-left font-semibold w-2/3">
+                                            Affiliation
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-border">
+                                    <!-- PLACEHOLDER: Replace with your actual authors and affiliations -->
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">H.A. Xu, PhD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Biomedical Data Science Center, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">R. Pythoud, Msc</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Biomedical Data Science Center, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">C.W. Thorball, PhD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Infectious Diseases Service, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">G. Carra, PhD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Biomedical Data Science Center, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">B. Kulynych, PhD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Biomedical Data Science Center, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">J. Despraz, Msc</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Biomedical Data Science Center, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">C. Galland-Decker, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Clinical Informatics Unit, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">E. Maslias, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Department of Clinical Neurosciences, Lausanne University Hospital and University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">E. Baudson</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Department of Clinical Neurosciences, Lausanne University Hospital and University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">T. Brahier, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Infectious Diseases Service, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">V. Kraege, MD eMBA</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Innovation and medical Research Directorate, Lausanne University Hospital, Lausanne, Switzerland
+                                            Faculty of Biology and Medicine, University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">A.C. de Sousa Teixeira, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Faculty of Biology and Medicine, University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">C. Fidalgo, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Division of Internal Medicine, Lausanne University Hospital and University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">F. Berthaudin, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Division of Internal Medicine, Lausanne University Hospital and University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">A. Madina, Msc</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            IT Department, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">S. Zoergiebel, Msc</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            IT Department, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">F. Bastardot, MD MSACI</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Clinical Informatics Unit, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">A. Stravodimou, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Department of Oncology, Medical Oncology Service, Lausanne University Hospital, Lausanne
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">M. Mean, MD PD-MER</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Division of Internal Medicine, Lausanne University Hospital and University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">J. Fellay, MD PhD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Biomedical Data Science Center, Lausanne University Hospital, Lausanne, Switzerland
+                                            School of Life Sciences, EPFL, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">P. Ryvlin, MD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Department of Clinical Neurosciences, Lausanne University Hospital and University of Lausanne, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium">J.L. Raisaro, PhD</td>
+                                        <td class="px-4 py-2 text-textSoft">
+                                            Biomedical Data Science Center, Lausanne University Hospital, Lausanne, Switzerland
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!--  FOOTER                                                      -->
+        <!-- ============================================================ -->
+        <footer
+            class="bg-white border-t border-border mt-8 py-4 text-center text-xs text-textSoft"
+        >
+            Presented at [2nd AI Symposium], 2026 • Scan the QR code to revisit
+            this interactive poster • Contact:
+            <a href="mailto:he.xu@chuv.ch" class="text-primary underline"
+                >he.xu@chuv.ch</a
+            >
+        </footer>
+
+        <!-- ============================================================ -->
+        <!--  JAVASCRIPT: Navigation, Toggle, and Charts                  -->
+        <!-- ============================================================ -->
+        <script>
+            // --- Navigation Logic ---
+            const navButtons = document.querySelectorAll(".nav-btn");
+            const contentSections =
+                document.querySelectorAll(".content-section");
+
+            navButtons.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const targetId = btn.getAttribute("data-target");
+
+                    // Remove active from all nav buttons
+                    navButtons.forEach((b) => b.classList.remove("active"));
+                    // Add active to clicked button
+                    btn.classList.add("active");
+
+                    // Hide all content sections, show target
+                    contentSections.forEach((s) =>
+                        s.classList.remove("active"),
+                    );
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.classList.add("active");
+                        // Draw any charts in this section (Plotly needs visible container)
+                        drawChartsInSection(targetId);
+                    }
+                });
+            });
+
+            // --- Chart/Table Toggle Logic (generic: handles any data-view value) ---
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const section = btn.getAttribute('data-section');
+                    const view = btn.getAttribute('data-view');
+
+                    // Deactivate all sibling buttons in the same button group
+                    const siblings = btn.parentElement.querySelectorAll('.toggle-btn');
+                    siblings.forEach(s => {
+                        s.classList.remove('active', 'bg-primary', 'text-white');
+                        s.classList.add('bg-gray-100', 'text-textMain', 'border', 'border-border');
+                    });
+                    // Activate clicked button
+                    btn.classList.add('active', 'bg-primary', 'text-white');
+                    btn.classList.remove('bg-gray-100', 'text-textMain', 'border', 'border-border');
+
+                    // Hide all view panels in this section, then show the selected one
+                    const sectionElement = document.getElementById(section);
+                    if (sectionElement) {
+                        const allPanels = sectionElement.querySelectorAll('.view-panel');
+                        allPanels.forEach(panel => panel.classList.add('hidden'));
+
+                        const targetPanel = document.getElementById(section + '-' + view);
+                        if (targetPanel) {
+                            targetPanel.classList.remove('hidden');
+                        }
+                    }
+                });
+            });
+
+            // --- Chart Drawing Function ---
+            function drawChartsInSection(sectionId) {
+                // Summary chart
+                if (sectionId === "results-summary") {
+                    const el = document.getElementById("chartSummary");
+                    if (el && el.offsetParent !== null) {
+                        drawSummaryChart(el);
+                    }
+                }
+                // Use case charts
+                const ucChartMap = {
+                    uc1: { el: "chartUC1", fn: drawUC1Chart },
+                    uc2: { el: "chartUC2", fn: drawUC2Chart },
+                    uc3: { el: "chartUC3", fn: drawUC3Chart },
+                    uc4: { el: "chartUC4", fn: drawUC4Chart },
+                    uc5: { el: "chartUC5", fn: drawUC5Chart },
+                    uc6: { el: "chartUC6", fn: drawUC6Chart },
+                };
+
+                if (ucChartMap[sectionId]) {
+                    const { el, fn } = ucChartMap[sectionId];
+                    const chartEl = document.getElementById(el);
+                    if (chartEl && chartEl.offsetParent !== null) {
+                        fn(chartEl);
+                    }
+                }
+            }
+
+            // --- PLACEHOLDER CHARTS (replace these with your actual data) ---
+
+            function drawSummaryChart(el) {
+                const trace1 = {
+                    x: [
+                        "PHI Extraction",
+                        "irAE Extraction",
+                        "Translation",
+                        "Summary",
+                        "Patient Letter",
+                    ],
+                    y: [0.93, 0.88, 0.42, 0.45, 0.85], // PLACEHOLDER: Replace with real scores
+                    type: "bar",
+                    name: "GPT-4o",
+                    marker: { color: "#2563eb" },
+                };
+                const trace2 = {
+                    x: [
+                        "PHI Extraction",
+                        "irAE Extraction",
+                        "Translation",
+                        "Summary",
+                        "Patient Letter",
+                    ],
+                    y: [0.9, 0.85, 0.38, 0.41, 0.88],
+                    type: "bar",
+                    name: "Claude 3.5",
+                    marker: { color: "#059669" },
+                };
+                const trace3 = {
+                    x: [
+                        "PHI Extraction",
+                        "irAE Extraction",
+                        "Translation",
+                        "Summary",
+                        "Patient Letter",
+                    ],
+                    y: [0.86, 0.79, 0.32, 0.35, 0.8],
+                    type: "bar",
+                    name: "Llama-3-70B",
+                    marker: { color: "#7c3aed" },
+                };
+                const layout = {
+                    barmode: "group",
+                    paper_bgcolor: "#f9fafb",
+                    plot_bgcolor: "#f9fafb",
+                    font: { family: "Inter, sans-serif", color: "#1e293b" },
+                    margin: { t: 20, r: 20, b: 60, l: 50 },
+                    legend: { orientation: "h", y: -0.2 },
+                    yaxis: {
+                        title: "Score (F1 / BLEU / Accuracy)",
+                        range: [0, 1],
+                    },
+                };
+                Plotly.newPlot(el, [trace1, trace2, trace3], layout, {
+                    responsive: true,
+                    displayModeBar: false,
+                });
+            }
+
+            function drawUC1Chart(el) {
+                const trace = {
+                    x: ["GPT-4o", "Claude 3.5", "Llama-3-70B"], // PLACEHOLDER
+                    y: [0.93, 0.9, 0.86], // PLACEHOLDER: F1 scores
+                    type: "bar",
+                    marker: { color: ["#2563eb", "#059669", "#7c3aed"] },
+                    text: ["0.93", "0.90", "0.86"],
+                    textposition: "auto",
+                };
+                const layout = {
+                    paper_bgcolor: "#f9fafb",
+                    plot_bgcolor: "#f9fafb",
+                    font: { family: "Inter, sans-serif", color: "#1e293b" },
+                    margin: { t: 10, r: 10, b: 40, l: 40 },
+                    yaxis: { title: "F1 Score", range: [0.7, 1] },
+                    showlegend: false,
+                };
+                Plotly.newPlot(el, [trace], layout, {
+                    responsive: true,
+                    displayModeBar: false,
+                });
+            }
+
+            function drawUC2Chart(el) {
+                const trace = {
+                    x: ["GPT-4o", "Claude 3.5", "Llama-3-70B"],
+                    y: [0.88, 0.85, 0.79],
+                    type: "bar",
+                    marker: { color: ["#2563eb", "#059669", "#7c3aed"] },
+                    text: ["0.88", "0.85", "0.79"],
+                    textposition: "auto",
+                };
+                const layout = {
+                    paper_bgcolor: "#f9fafb",
+                    plot_bgcolor: "#f9fafb",
+                    font: { family: "Inter, sans-serif", color: "#1e293b" },
+                    margin: { t: 10, r: 10, b: 40, l: 40 },
+                    yaxis: { title: "Detection F1", range: [0.7, 1] },
+                    showlegend: false,
+                };
+                Plotly.newPlot(el, [trace], layout, {
+                    responsive: true,
+                    displayModeBar: false,
+                });
+            }
+
+            function drawUC3Chart(el) {
+                const trace1 = {
+                    x: ["GPT-4o", "Claude 3.5", "Llama-3-70B"],
+                    y: [0.42, 0.38, 0.32],
+                    type: "bar",
+                    name: "BLEU",
+                    marker: { color: "#2563eb" },
+                };
+                const trace2 = {
+                    x: ["GPT-4o", "Claude 3.5", "Llama-3-70B"],
+                    y: [4.2, 4.0, 3.5],
+                    type: "bar",
+                    name: "Clinician Rating (/5)",
+                    marker: { color: "#f59e0b" },
+                };
+                const layout = {
+                    barmode: "group",
+                    paper_bgcolor: "#f9fafb",
+                    plot_bgcolor: "#f9fafb",
+                    font: { family: "Inter, sans-serif", color: "#1e293b" },
+                    margin: { t: 10, r: 10, b: 40, l: 40 },
+                    legend: { orientation: "h", y: -0.25 },
+                };
+                Plotly.newPlot(el, [trace1, trace2], layout, {
+                    responsive: true,
+                    displayModeBar: false,
+                });
+            }
+
+            function drawUC4Chart(el) {
+                const trace = {
+                    x: ["GPT-4o", "Claude 3.5", "Llama-3-70B"],
+                    y: [0.92, 0.94, 0.88],
+                    type: "bar",
+                    marker: { color: ["#2563eb", "#059669", "#7c3aed"] },
+                    text: ["0.92", "0.94", "0.88"],
+                    textposition: "auto",
+                };
+                const layout = {
+                    paper_bgcolor: "#f9fafb",
+                    plot_bgcolor: "#f9fafb",
+                    font: { family: "Inter, sans-serif", color: "#1e293b" },
+                    margin: { t: 10, r: 10, b: 40, l: 40 },
+                    yaxis: { title: "Factuality", range: [0.8, 1] },
+                    showlegend: false,
+                };
+                Plotly.newPlot(el, [trace], layout, {
+                    responsive: true,
+                    displayModeBar: false,
+                });
+            }
+
+            function drawUC5Chart(el) {
+                const trace = {
+                    x: ["GPT-4o", "Claude 3.5", "Llama-3-70B"],
+                    y: [4.5, 4.6, 4.2],
+                    type: "bar",
+                    marker: { color: ["#2563eb", "#059669", "#7c3aed"] },
+                    text: ["4.5", "4.6", "4.2"],
+                    textposition: "auto",
+                };
+                const layout = {
+                    paper_bgcolor: "#f9fafb",
+                    plot_bgcolor: "#f9fafb",
+                    font: { family: "Inter, sans-serif", color: "#1e293b" },
+                    margin: { t: 10, r: 10, b: 40, l: 40 },
+                    yaxis: { title: "Understandability (1-5)", range: [3, 5] },
+                    showlegend: false,
+                };
+                Plotly.newPlot(el, [trace], layout, {
+                    responsive: true,
+                    displayModeBar: false,
+                });
+            }
+            function drawUC6Chart(el) {
+                const trace = {
+                    x: ["GPT-4o", "Claude 3.5", "Llama-3-70B"],
+                    y: [4.5, 4.6, 4.2],
+                    type: "bar",
+                    marker: { color: ["#2563eb", "#059669", "#7c3aed"] },
+                    text: ["4.5", "4.6", "4.2"],
+                    textposition: "auto",
+                };
+                const layout = {
+                    paper_bgcolor: "#f9fafb",
+                    plot_bgcolor: "#f9fafb",
+                    font: { family: "Inter, sans-serif", color: "#1e293b" },
+                    margin: { t: 10, r: 10, b: 40, l: 40 },
+                    yaxis: { title: "Understandability (1-5)", range: [3, 5] },
+                    showlegend: false,
+                };
+                Plotly.newPlot(el, [trace], layout, {
+                    responsive: true,
+                    displayModeBar: false,
+                });
+            }
+        </script>
+    </body>
+</html>
